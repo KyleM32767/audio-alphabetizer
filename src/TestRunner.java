@@ -1,7 +1,10 @@
 /**
  * testRunner.java
  * 
- * A simple class to test the alphabetizer
+ * A simple class to test the alphabetizer using a simple recording
+ * 
+ * I know I could very well have put this on the Alphabetizer class but I already 
+ * made it and can't be bothered to change it.
  * 
  * @author Kyle Mitard
  * Created 3 May 2020
@@ -26,9 +29,13 @@ public class TestRunner
 
 	public static void main(String[] args) throws IOException
 	{
+		//initialize the aplhabetizer
 		Alphabetizer a = new Alphabetizer();
 		
+		//alphabetize the audio file
 		a.alphabetize(FILE_NAME, TRANSCRIPT);
+		
+		//TODO somehow make the output file
 	}
 
 }
