@@ -122,7 +122,8 @@ public class Alphabetizer
 		//allign the transcript
 		alignedTranscript = (ArrayList) (aligner.align(fileURL, transcript));
 		
-		//print information pertaining to the alignment
+		
+		//if testing flag is true, print information pertaining to the alignment
 		if (TESTING)
 		{
 			for (WordResult w: alignedTranscript)
@@ -131,6 +132,36 @@ public class Alphabetizer
 			}
 			System.out.println("number of words: " + alignedTranscript.size());
 		}
+		
+		
+		//sort the aligned transcript in alphabetical order using insertion sort
+		int minIndex;
+		
+		for (int i = 0; i < alignedTranscript.size() - 1; i++)
+		{
+			minIndex = i;
+			
+			for (int j = i; j < alignedTranscript.size(); j++)
+			{
+				if (alignedTranscript.get(j).getWord().toString().compareTo(alignedTranscript.get(minIndex).getWord().toString()) < 0)
+					minIndex = j;
+			}
+			
+			alignedTranscript.add(i, alignedTranscript.remove(minIndex));
+		}
+		
+		
+		//if testing flag is true, print information pertaining to the alignment
+		if (TESTING)
+		{
+			for (WordResult w: alignedTranscript)
+			{
+				System.out.println(w);
+			}
+			System.out.println("number of words: " + alignedTranscript.size());
+		}
+		
+		
 	}
 
 }
