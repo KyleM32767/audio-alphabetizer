@@ -47,9 +47,15 @@ public class Alphabetizer
 	
 	
 	/**
+	 * the audio file being alphabetized
+	 */
+	private File audioFile;
+	
+	
+	/**
 	 * the URL to the audio file
 	 */
-	private URL fileURL;
+	private URL audioURL;
 	
 	
 	/**
@@ -116,11 +122,14 @@ public class Alphabetizer
 		if (!fileName.substring(fileName.length() - 4, fileName.length()).equalsIgnoreCase(".wav"))
 			throw new IllegalArgumentException("Audio file must be in WAV format");
 		
-		//initialize the file URL
-		fileURL = (new File(fileName)).toURI().toURL();
+		
+		//initialize the audio file and URL
+		audioFile = new File(fileName);
+		audioURL = audioFile.toURI().toURL();
+		
 		
 		//allign the transcript
-		alignedTranscript = (ArrayList) (aligner.align(fileURL, transcript));
+		alignedTranscript = (ArrayList) (aligner.align(audioURL, transcript));
 		
 		
 		//if testing flag is true, print information pertaining to the alignment
@@ -162,6 +171,7 @@ public class Alphabetizer
 		}
 		
 		
+		Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " output.wav");
 	}
 
 }
