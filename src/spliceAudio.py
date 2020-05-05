@@ -16,7 +16,7 @@
 
 '''
 
-from pydub import audioSegment
+from pydub import AudioSegment
 import sys
 
 inFile = sys.argv[1]
@@ -35,4 +35,4 @@ firstHalf = audio[:duration // 2]
 # recombine the halves in reverse order
 swappedHalvesAudio = lastHalf + firstHalf
 
-swappedHalvesAudio.export('outFile', format='wav')
+swappedHalvesAudio.export(outFile, format='wav')

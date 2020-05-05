@@ -1,32 +1,38 @@
 /**
  * Alphabetizer.java
  * 
- * A class that splices and joins audio in such a way that all of the words are
+ * A class that splices and joins audio in such a way that all of the words are in alphabetical order
  * 
  * @author Kyle Mitard
+ * 
  * Created 3 May 2020
+ * Updated 4 May 2020
  */
 
+//java imports
 import java.io.IOException;
-import java.io.File;
 import java.net.MalformedURLException;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
+//CMUSphinx imports
 import edu.cmu.sphinx.api.SpeechAligner;
 import edu.cmu.sphinx.result.WordResult;
 
+
 public class Alphabetizer
 {
+
+	/* ===============================================================================================================================
+	 * INSTANCE VARIABLES
+	 * =============================================================================================================================== */
 	
 	/**
 	 * flag for when I am testing/debugging in order to print information
 	 */
-	private boolean TESTING = true;
+	private boolean TESTING = false;
 	
-	/* ===============================================================================================================================
-	 * INSTANCE VARIABLES
-	 * =============================================================================================================================== */
 	
 	/**
 	 * the default path to the acoustic model, which is just the standard Endlish one included with CMUSphinx
@@ -62,6 +68,12 @@ public class Alphabetizer
 	 * ArrayList containing the words with their timestamps
 	 */
 	private ArrayList<WordResult> alignedTranscript;
+	
+	
+	/**
+	 * the process that runs the python script which sorts the 
+	 */
+	private Process pythonScript;
 
 	
 	/* ===============================================================================================================================
@@ -95,7 +107,6 @@ public class Alphabetizer
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	/**
 	 * Alphabetizes a given audio file using a transcript
 	 * 
@@ -113,10 +124,13 @@ public class Alphabetizer
 	 * 
 	 * @param fileName		the path to the audio file, which MUST be a wav file
 	 * @param transcript	the transcript
+	 * 
 	 * @throws IOException
 	 * @throws IllegalArguementException if fileName does not end with ".wav"
+	 * @throws InterruptedException
 	 */
-	public void alphabetize(String fileName, String transcript) throws IOException
+	@SuppressWarnings("unchecked")
+	public void alphabetize(String fileName, String transcript) throws IOException, InterruptedException
 	{
 		// throw an IllegalArguementException if the file referenced is not a wav file
 		if (!fileName.substring(fileName.length() - 4, fileName.length()).equalsIgnoreCase(".wav"))
@@ -171,7 +185,9 @@ public class Alphabetizer
 		}
 		
 		
-		Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " output.wav");
+		//run a Python script to splice audio
+		pythonScript = Runtime.getRuntime().exec("python src/spliceAudio.py " + fileName + " audio_files/output.wav");
+		int exitCode = pythonScript.waitFor();
 	}
 
 }
