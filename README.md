@@ -12,4 +12,12 @@ With that said, the usage of PyDub is only temporary at the moment, since I woul
 
 > RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, mono 16000 Hz
 
-I have nothing to work around this at the moment, but I have plans to incorporate FFMPEG or something along those lines to do the conversion.
+Also, in order for it to pick up every word there must be little to no background noise in the recording. Here is what I've tried:
+
+| Source | Result |
+| :---: | :---: |
+| [Road work ahead?](https://www.youtube.com/watch?v=9sPthPleEKo) | Works flawlessly |
+| [Scott Bradford](https://www.youtube.com/watch?v=Pbkn21NNduc) | Works well until the end |
+| [I can't believe you've done this](https://www.youtube.com/watch?v=8lBO23Dh23I) | Works flawlessly (although I did cut out the last ~2 seconds) |
+| [No Vegetal](https://www.youtube.com/watch?v=BozJwAFK2Io) | A few words are missed (particularly the ones with the overboosted audio) |
+| [Icced](https://www.youtube.com/watch?v=akGpGA3jYek) | Barely anything is picked up |

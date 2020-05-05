@@ -31,7 +31,7 @@ public class Alphabetizer
 	/**
 	 * flag for when I am testing/debugging in order to print information
 	 */
-	private boolean TESTING = false;
+	private boolean TESTING = true;
 	
 	
 	/**
@@ -68,6 +68,12 @@ public class Alphabetizer
 	 * ArrayList containing the words with their timestamps
 	 */
 	private ArrayList<WordResult> alignedTranscript;
+	
+	
+	/**
+	 * the beginning timestamp of every word in alphabetical order, as it will be passed into the python script
+	 */
+	private String timestamps;
 	
 	
 	/**
@@ -173,20 +179,28 @@ public class Alphabetizer
 			alignedTranscript.add(i, alignedTranscript.remove(minIndex));
 		}
 		
+
+		//create a string consisting of the beginning timestamps of each word in order separated by commas,
+		//which will be passed as an argument to the python script
+		timestamps = "";
 		
-		//if testing flag is true, print information pertaining to the alignment
+		for (WordResult w: alignedTranscript)
+		{
+			timestamps += w.getTimeFrame().getStart() + ",";
+			
+			//some prints for testing too
+			if (TESTING)
+				System.out.println(w);
+		}
 		if (TESTING)
 		{
-			for (WordResult w: alignedTranscript)
-			{
-				System.out.println(w);
-			}
 			System.out.println("number of words: " + alignedTranscript.size());
+			System.out.println(timestamps);
 		}
 		
 		
 		//run a Python script to splice audio
-		pythonScript = Runtime.getRuntime().exec("python src/spliceAudio.py " + fileName + " audio_files/output.wav");
+		pythonScript = Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " audio_files/output.wav " + timestamps);
 		int exitCode = pythonScript.waitFor();
 	}
 
