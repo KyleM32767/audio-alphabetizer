@@ -31,7 +31,7 @@ public class Alphabetizer
 	/**
 	 * flag for when I am testing/debugging in order to print information
 	 */
-	private boolean TESTING = true;
+	private boolean TESTING = false;
 	
 	
 	/**
@@ -50,6 +50,12 @@ public class Alphabetizer
 	 * The object that aligns the audio to the transcript
 	 */
 	private SpeechAligner aligner;
+	
+	
+	/**
+	 * the name of the audio file being alphabetized
+	 */
+	private String fileName;
 	
 	
 	/**
@@ -73,7 +79,13 @@ public class Alphabetizer
 	/**
 	 * the beginning timestamp of every word in alphabetical order, as it will be passed into the python script
 	 */
-	private String timestamps;
+	private String startTimestamps;
+	
+	
+	/**
+	 * the ending timestamp of every word in alphabetical order, as it will be passed into the python script
+	 */
+	private String endTimestamps;
 	
 	
 	/**
@@ -98,6 +110,7 @@ public class Alphabetizer
 	}
 	
 	
+	
 	/**
 	 * Constructor for overriding the default configurations of CMUSphinx
 	 * 
@@ -113,8 +126,9 @@ public class Alphabetizer
 	}
 	
 	
+	
 	/**
-	 * Alphabetizes a given audio file using a transcript
+	 * Prepares a given audio file for alphabetization using a transcript
 	 * 
 	 * In order to make sure for this to work properly, CMUSphinx must get exactly what it
 	 * needs. This means:
@@ -136,8 +150,10 @@ public class Alphabetizer
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	public void alphabetize(String fileName, String transcript) throws IOException, InterruptedException
+	public void prepareAudio(String file_name, String transcript) throws IOException, InterruptedException
 	{
+		fileName = file_name;
+		
 		// throw an IllegalArguementException if the file referenced is not a wav file
 		if (!fileName.substring(fileName.length() - 4, fileName.length()).equalsIgnoreCase(".wav"))
 			throw new IllegalArgumentException("Audio file must be in WAV format");
@@ -180,27 +196,64 @@ public class Alphabetizer
 		}
 		
 
-		//create a string consisting of the beginning timestamps of each word in order separated by commas,
+		//create a string consisting of the beginning and end timestamps of each word in order separated by commas,
 		//which will be passed as an argument to the python script
-		timestamps = "";
+		startTimestamps = "";
+		endTimestamps = "";
 		
 		for (WordResult w: alignedTranscript)
 		{
-			timestamps += w.getTimeFrame().getStart() + ",";
+			startTimestamps += w.getTimeFrame().getStart() + ",";
+			endTimestamps += w.getTimeFrame().getEnd() + ",";
 			
 			//some prints for testing too
 			if (TESTING)
 				System.out.println(w);
 		}
+		
+		
 		if (TESTING)
 		{
 			System.out.println("number of words: " + alignedTranscript.size());
-			System.out.println(timestamps);
+			System.out.println(startTimestamps);
 		}
-		
-		
+	}
+	
+	
+	
+	/**
+	 * Alphabetizes the previously prepared audio file such that it cuts as soon as the next word is said
+	 * 
+	 * Use this ONLY if CMUSphinx picked up every single word, since any missed words will appear out of
+	 * place in the alphabetized audio, since they are not accounted for
+	 * 
+	 * @param outFile 	the name of the output file
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public void alphabetize(String outFile) throws IOException, InterruptedException
+	{
 		//run a Python script to splice audio
-		pythonScript = Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " audio_files/output.wav " + timestamps);
+		pythonScript = Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " " + outFile + " " + startTimestamps);
+		int exitCode = pythonScript.waitFor();
+	}
+	
+	
+	
+	/**
+	 * Alphabetizes the previously prepared audio file such that it cuts at the end of every word
+	 * 
+	 * This will help produce better results with noisier audio files where not every word is picked up or
+	 * if there are large gaps between words, as it just skips them entirely
+	 * 
+	 * @param outFile 	the name of the output file
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	public void alphabetizeNoGap(String outFile) throws IOException, InterruptedException
+	{		
+		//run a Python script to splice audio, but this time with the end timestamps as an extra argument
+		pythonScript = Runtime.getRuntime().exec("python spliceAudio.py " + fileName + " " + outFile + " " + startTimestamps + " " + endTimestamps);
 		int exitCode = pythonScript.waitFor();
 	}
 

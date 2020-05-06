@@ -27,31 +27,51 @@ def getWordAudio(x):
 	print(sortedTimestamps[i], sortedTimestamps[i+1])
 	return inAudio[x:sortedTimestamps[i+1]]
 
+# returns a list of ints that are converted from a given string of values separated by commas
+def toIntList(string):
+	strList = string.split(',')[:-1]
+	intList = []
+	for s in strList:
+		intList.append(int(s))
+	return intList
+
 # get information from the arguements
 inFile = sys.argv[1]
 outFile = sys.argv[2]
-timestamps = sys.argv[3].split(',')[:-1]
-
-# typecast timestamps from string to int
-for i in range(0,len(timestamps)):
-	timestamps[i] = int(timestamps[i])
+start_timestamps = toIntList(sys.argv[3])
 
 # import audio segment
 inAudio = AudioSegment.from_wav(inFile)
 
-# sort timestamps in chronological order
-sortedTimestamps = sorted(timestamps)
+# if the end timestamps are given as a fourth argument, end splices using those timestamps (no gap mode)
+if len(sys.argv) == 5:
+	
+	end_timestamps = toIntList(sys.argv[4])
 
-# add the end of the track to the sorted timestamps
-sortedTimestamps.append(len(inAudio))
-print(sortedTimestamps)
+	# initialize output audio
+	outAudio = inAudio[start_timestamps[0]:end_timestamps[0]]
 
-# initialize output audio
-outAudio = getWordAudio(timestamps[0])
+	# increment through the start timestamps list, adding to the output audio
+	for i in range(1,len(start_timestamps)):
+		outAudio += inAudio[start_timestamps[i]:end_timestamps[i]]
 
-# increment through the timestamps list, adding to the output audio
-for i in range(1,len(timestamps)):
-	outAudio += getWordAudio(timestamps[i])
+
+# if they aren't given, end splices at the start of the next word
+else:
+
+	# sort start_timestamps in chronological order
+	sortedTimestamps = sorted(start_timestamps)
+
+	# add the end of the track to the sorted start timestamps
+	sortedTimestamps.append(len(inAudio))
+	print(sortedTimestamps)
+
+	# initialize output audio
+	outAudio = getWordAudio(start_timestamps[0])
+
+	# increment through the start timestamps list, adding to the output audio
+	for i in range(1,len(start_timestamps)):
+		outAudio += getWordAudio(start_timestamps[i])
 
 # export the output audio
 outAudio.export(outFile, format='wav')
