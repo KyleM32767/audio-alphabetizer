@@ -21,3 +21,4 @@ Also, in order for it to pick up every word there must be little to no backgroun
 | [I can't believe you've done this](https://www.youtube.com/watch?v=8lBO23Dh23I) | Works flawlessly (although I did cut out the last ~2 seconds) |
 | [No Vegetal](https://www.youtube.com/watch?v=BozJwAFK2Io) | A few words are missed (particularly the ones with the overboosted audio) |
 | [Icced](https://www.youtube.com/watch?v=akGpGA3jYek) | Barely anything is picked up |
+| [Steamed Hams](https://www.youtube.com/watch?v=4jXEuIHY9ic) | Almost everything, except for the part with the theme song, which is actually quite the opposite |
